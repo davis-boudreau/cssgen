@@ -1,29 +1,26 @@
-# Step 1: Use a Node.js base image
-FROM node:latest AS build
+# Step 1: Build the Vite app
+FROM node:18 AS build
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Step 2: Copy package.json and package-lock.json (if available)
+# Copy package.json and package-lock.json (or yarn.lock) first to leverage Docker cache
 COPY package*.json ./
-
-# Step 3: Install dependencies
 RUN npm install
 
-# Step 4: Copy the rest of the application
+# Copy the rest of the application files
 COPY . .
 
-# Step 5: Build the React app for production
+# Build the Vite app (output goes to /app/dist)
 RUN npm run build
 
-# Step 6: Use a lighter image to serve the built app (using Nginx here)
+# Step 2: Serve the app using Nginx
 FROM nginx:alpine
 
-# Step 7: Copy the build files from the previous stage into the Nginx container
-COPY --from=build /app/build /usr/share/nginx/html
+# Copy the Vite build output to Nginx's web server directory
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose port 80 to serve the app
+# Expose port 80 for the web service
 EXPOSE 80
 
-# Step 8: Run Nginx in the foreground
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
