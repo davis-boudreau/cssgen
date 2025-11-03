@@ -1,0 +1,5 @@
+{
+  "name": "Modern CSS Theme Generator",
+  "description": "An application to generate a complete, modern CSS theme from base inputs like brand colors and typography. It provides CSS code, semantic tokens for light/dark modes, and a live preview of common UI components.",
+  "requestFramePermissions": []
+}
